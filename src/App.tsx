@@ -1,93 +1,88 @@
-import { useState, useEffect } from 'react';
-
-const baseUrl = "https://sugarytestapi.azurewebsites.net/";
-const listPath = "TestApi/GetComplains";
-const savePath = "TestApi/SaveComplain";
+import { useEffect, useState } from "react";
+import { fetchComplaints, saveComplaint } from "./Api/api";
+import ComplaintForm from "./Components/ComplaintForm";
+import ComplaintsList from "./Components/ComplaintsList";
 
 function App() {
-  const [complains, setComplains] = useState([]);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+  const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Fetch complaints from the API
-  const fetchComplains = async () => {
-    setIsLoading(true);
-    const response = await fetch(`${baseUrl}${listPath}`);
-    const data = await response.json();
-    setComplains(data);
-    setIsLoading(false);
-  };
+  // Handle complaint submission with smooth UI updates
+  const handleSaveComplaint = async (formData) => {
+    setIsSubmitting(true);
+    setErrorMessage("");
 
-  // Save a new complaint
-  const handleSubmit = async () => {
     try {
-      setIsSaving(true);
-      const response = await fetch(savePath, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const result = await saveComplaint(formData);
+
+      // Instead of reloading all complaints, just add the new one to the state
+      // This creates a smoother experience without refreshing the entire list
+      setComplaints((prevComplaints) => [
+        {
+          Id: result.Id || Date.now(), // Use the returned ID or fallback to timestamp
+          Title: formData.title,
+          Body: formData.body,
         },
-        body: JSON.stringify({
-          Title: "Test Title",
-          Body: "Test Body",
-        }),
-      });
-      const data = await response.json();
-      if (!data.Success) throw new Error("Failed to save complaint.");
-      // Missing: Update complaints list after successful submission
-    } catch (e) {
-      // Error state not being set
+        ...prevComplaints, // Add new complaint at the top
+      ]);
+
+      return true;
+    } catch (error) {
+      console.error("Error saving complaint:", error);
+      setErrorMessage(
+        error.message || "Failed to submit complaint. Please try again."
+      );
+      return false;
     } finally {
-      setIsSaving(false);
+      setIsSubmitting(false);
     }
   };
 
+  // Fetch complaints on component mount
   useEffect(() => {
-    fetchComplains();
-  }, []); // Missing dependency array cleanup
+    const controller = new AbortController();
+
+    // Define the loading function directly in useEffect
+    const loadComplaints = async () => {
+      setIsLoading(true);
+      setErrorMessage("");
+      try {
+        const data = await fetchComplaints();
+        setComplaints(data);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+        setErrorMessage("Failed to load complaints. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadComplaints();
+
+    // Clean up when component unmounts
+    return () => {
+      controller.abort();
+    };
+  }, []); // Empty dependency array since we're only running on mount
 
   return (
-    <div className="wrapper">
-      <h2>Submit a Complaint</h2>
-
-      <div className="complain-form">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          placeholder="Enter your complaint"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        />
-
-        <button onClick={handleSubmit}>
-          {isSaving ? 'Submitting...' : 'Submit Complaint'}
-        </button>
-
-        {/* Place text loader when saving */}
-        {/* Error message not displayed even though state exists */}
-      </div>
-
-      <h2>Complaints List</h2>
-
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : complains.length ? (
-        complains.map((complain) => (
-          <div key={complain.Id} className="complain-item">
-            <h3>{complain.Title}</h3>
-            <p>{complain.Body}</p>
-          </div>
-        ))
-      ) : (
-        <p>No complaints available.</p>
+    <div className="wrapper max-w-3xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Submit a Complaint</h2>
+      <ComplaintForm
+        onSubmitSuccess={handleSaveComplaint}
+        isSubmitting={isSubmitting}
+        submitError={errorMessage}
+      />
+      <h2 className="text-2xl font-bold mt-8 mb-4">Complaints List</h2>
+      {/* Global error message for fetch errors */}
+      {errorMessage && !isSubmitting && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {errorMessage}
+        </div>
       )}
+      <ComplaintsList complaints={complaints} isLoading={isLoading} />
     </div>
   );
 }
