@@ -1,5 +1,3 @@
-// ComplaintForm.jsx - Form component for submitting complaints
-
 import { useForm } from "react-hook-form";
 import Field from "./Common/Field";
 
@@ -19,27 +17,25 @@ const ComplaintForm = ({ onSubmitSuccess, isSubmitting, submitError }) => {
   };
 
   return (
-    <div className="complain-form">
+    <div className="complaint-form">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Field label="Title" error={errors.title}>
           <input
             id="title"
             type="text"
-            placeholder="Title"
+            placeholder="Brief description of your complaint"
             {...register("title", {
               required: "Title is required",
             })}
-            className="w-full pl-3 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+            className={errors.title ? "input-error" : ""}
           />
+          {errors.title && <p className="error-text">{errors.title.message}</p>}
         </Field>
-        {errors.title && (
-          <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-        )}
 
-        <Field label="Complaint" error={errors.body}>
+        <Field label="Description" error={errors.body}>
           <textarea
             id="body"
-            placeholder="Enter your complaint"
+            placeholder="Please provide details about your complaint"
             {...register("body", {
               required: "Complaint text is required",
               minLength: {
@@ -47,25 +43,42 @@ const ComplaintForm = ({ onSubmitSuccess, isSubmitting, submitError }) => {
                 message: "Please provide at least 10 characters",
               },
             })}
-            className="w-full pl-3 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 mt-2"
-            rows={4}
+            className={errors.body ? "input-error" : ""}
+            rows={5}
           />
+          {errors.body && <p className="error-text">{errors.body.message}</p>}
         </Field>
-        {errors.body && (
-          <p className="text-red-500 text-sm mt-1">{errors.body.message}</p>
-        )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-blue-300"
+          className={`submit-button ${isSubmitting ? "submitting" : ""}`}
         >
-          {isSubmitting ? "Submitting..." : "Submit Complaint"}
+          {isSubmitting ? (
+            <>
+              <span className="spinner"></span>
+              <span>Submitting...</span>
+            </>
+          ) : (
+            "Submit Complaint"
+          )}
         </button>
       </form>
 
       {submitError && (
-        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="error-banner">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            className="error-icon"
+          >
+            <path
+              fill="currentColor"
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
+            />
+          </svg>
           {submitError}
         </div>
       )}

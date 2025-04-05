@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchComplaints, saveComplaint } from "./Api/api";
+import "./App.css";
 import ComplaintForm from "./Components/ComplaintForm";
 import ComplaintsList from "./Components/ComplaintsList";
 
@@ -68,21 +69,33 @@ function App() {
   }, []); // Empty dependency array since we're only running on mount
 
   return (
-    <div className="wrapper max-w-3xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Submit a Complaint</h2>
-      <ComplaintForm
-        onSubmitSuccess={handleSaveComplaint}
-        isSubmitting={isSubmitting}
-        submitError={errorMessage}
-      />
-      <h2 className="text-2xl font-bold mt-8 mb-4">Complaints List</h2>
-      {/* Global error message for fetch errors */}
-      {errorMessage && !isSubmitting && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {errorMessage}
-        </div>
-      )}
-      <ComplaintsList complaints={complaints} isLoading={isLoading} />
+    <div className="app-container">
+      <div className="app-content">
+        <header className="app-header">
+          <h1>Customer Feedback Portal</h1>
+          <p>
+            We value your feedback and are committed to addressing your concerns
+          </p>
+        </header>
+
+        <section className="form-section">
+          <h2>Submit a Complaint</h2>
+          <ComplaintForm
+            onSubmitSuccess={handleSaveComplaint}
+            isSubmitting={isSubmitting}
+            submitError={errorMessage}
+          />
+        </section>
+
+        <section className="list-section">
+          <h2>Recent Complaints</h2>
+          {/* Global error message for fetch errors */}
+          {errorMessage && !isSubmitting && (
+            <div className="error-banner">{errorMessage}</div>
+          )}
+          <ComplaintsList complaints={complaints} isLoading={isLoading} />
+        </section>
+      </div>
     </div>
   );
 }

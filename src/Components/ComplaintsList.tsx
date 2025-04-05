@@ -1,27 +1,43 @@
-// ComplaintsList.jsx - Component to display list of complaints
-
 const ComplaintsList = ({ complaints, isLoading }) => {
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="loader">Loading...</div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading complaints...</p>
       </div>
     );
   }
 
   if (!complaints.length) {
-    return <p className="text-gray-500 py-4">No complaints available.</p>;
+    return (
+      <div className="empty-state">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          className="empty-icon"
+        >
+          <path
+            fill="currentColor"
+            d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"
+          />
+        </svg>
+        <p>No complaints available yet.</p>
+        <p className="empty-subtitle">Be the first to submit feedback!</p>
+      </div>
+    );
   }
 
   return (
-    <div className="complaints-list mt-4 space-y-4">
+    <div className="complaints-list">
       {complaints.map((complaint) => (
-        <div
-          key={complaint.Id}
-          className="complain-item p-4 border rounded-lg shadow-sm"
-        >
-          <h3 className="font-medium text-lg">{complaint.Title}</h3>
-          <p className="text-gray-700 mt-2">{complaint.Body}</p>
+        <div key={complaint.Id} className="complaint-card">
+          <h3>{complaint.Title}</h3>
+          <p>{complaint.Body}</p>
+          <div className="complaint-footer">
+            <span className="complaint-id">ID: {complaint.Id}</span>
+          </div>
         </div>
       ))}
     </div>
