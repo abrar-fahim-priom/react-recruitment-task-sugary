@@ -79,5 +79,10 @@ Chose **React Hook Form** due to its:
 
 ## **Screenshots**
 
+### **BEFORE**
+
 ![Before](https://res.cloudinary.com/dinrnhkst/image/upload/v1744201601/before_ag9zuc.jpg)
+
+### **AFTER**
+
 ![After](https://res.cloudinary.com/dinrnhkst/image/upload/v1744201601/after_dbcufo.jpg)
