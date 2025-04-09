@@ -1,6 +1,8 @@
+// App.js
 import { useEffect, useState } from "react";
 import { fetchComplaints, saveComplaint } from "./Api/api";
 import "./App.css";
+import Tooltip from "./Components/Common/Tooltip";
 import ComplaintForm from "./Components/ComplaintForm";
 import ComplaintsList from "./Components/ComplaintsList";
 
@@ -8,18 +10,40 @@ function App() {
   const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  // Separate error states for different operations
+  const [fetchError, setFetchError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+
+  // Tooltip state
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    message: "",
+    type: "success", // success or error
+  });
+
+  // Show tooltip function
+  const showTooltip = (message, type = "success") => {
+    // First reset any existing tooltip to ensure animation plays again
+    setTooltip({ visible: false, message: "", type: "success" });
+
+    // Small delay to ensure the component remounts
+    setTimeout(() => {
+      setTooltip({ visible: true, message, type });
+    }, 10);
+
+    // Auto-hide tooltip after 5 seconds
+    setTimeout(() => {
+      setTooltip((prev) => ({ ...prev, visible: false }));
+    }, 5000);
+  };
 
   // Handle complaint submission with smooth UI updates
   const handleSaveComplaint = async (formData) => {
     setIsSubmitting(true);
-    setErrorMessage("");
-
+    setSubmitError(""); // Only clear submit errors
     try {
       const result = await saveComplaint(formData);
-
-      // Instead of reloading all complaints, just add the new one to the state
-      // This creates a smoother experience without refreshing the entire list
+      // Add the new complaint to the state
       setComplaints((prevComplaints) => [
         {
           Id: result.Id || Date.now(), // Use the returned ID or fallback to timestamp
@@ -29,12 +53,18 @@ function App() {
         ...prevComplaints, // Add new complaint at the top
       ]);
 
+      // Show success tooltip
+      showTooltip("Your complaint has been successfully submitted!");
+
       return true;
     } catch (error) {
       console.error("Error saving complaint:", error);
-      setErrorMessage(
-        error.message || "Failed to submit complaint. Please try again."
-      );
+      const errorMsg = "Failed to submit complaint. Please try again.";
+      setSubmitError(errorMsg); // Set only submit error
+
+      // Show error tooltip
+      showTooltip(errorMsg, "error");
+
       return false;
     } finally {
       setIsSubmitting(false);
@@ -44,24 +74,25 @@ function App() {
   // Fetch complaints on component mount
   useEffect(() => {
     const controller = new AbortController();
-
     // Define the loading function directly in useEffect
     const loadComplaints = async () => {
       setIsLoading(true);
-      setErrorMessage("");
+      setFetchError(""); // Only clear fetch errors
       try {
         const data = await fetchComplaints();
         setComplaints(data);
       } catch (error) {
         console.error("Error fetching complaints:", error);
-        setErrorMessage("Failed to load complaints. Please try again later.");
+        const errorMsg = "Failed to load complaints. Please try again later.";
+        setFetchError(errorMsg); // Set only fetch error
+
+        // Show error tooltip for fetch errors
+        showTooltip(errorMsg, "error");
       } finally {
         setIsLoading(false);
       }
     };
-
     loadComplaints();
-
     // Clean up when component unmounts
     return () => {
       controller.abort();
@@ -77,25 +108,31 @@ function App() {
             We value your feedback and are committed to addressing your concerns
           </p>
         </header>
-
         <section className="form-section">
           <h2>Submit a Complaint</h2>
           <ComplaintForm
             onSubmitSuccess={handleSaveComplaint}
             isSubmitting={isSubmitting}
-            submitError={errorMessage}
+            submitError={submitError}
           />
         </section>
-
         <section className="list-section">
           <h2>Recent Complaints</h2>
-          {/* Global error message for fetch errors */}
-          {errorMessage && !isSubmitting && (
-            <div className="error-banner">{errorMessage}</div>
-          )}
-          <ComplaintsList complaints={complaints} isLoading={isLoading} />
+          <ComplaintsList
+            complaints={complaints}
+            isLoading={isLoading}
+            fetchError={fetchError}
+          />
         </section>
       </div>
+
+      {/* Tooltip component */}
+      <Tooltip
+        visible={tooltip.visible}
+        message={tooltip.message}
+        type={tooltip.type}
+        onClose={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+      />
     </div>
   );
 }

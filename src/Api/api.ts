@@ -1,3 +1,4 @@
+// Api/api.js
 const API_CONFIG = {
   baseUrl: "https://sugarytestapi.azurewebsites.net/",
   endpoints: {
@@ -42,5 +43,6 @@ export const saveComplaint = async (formData) => {
   if (!data.Success) {
     throw new Error(data.Message || "Failed to save complaint.");
   }
+
   return data;
 };

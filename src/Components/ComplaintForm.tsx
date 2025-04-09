@@ -1,3 +1,4 @@
+// Components/ComplaintForm.js
 import { useForm } from "react-hook-form";
 import Field from "./Common/Field";
 
@@ -29,7 +30,6 @@ const ComplaintForm = ({ onSubmitSuccess, isSubmitting, submitError }) => {
             })}
             className={errors.title ? "input-error" : ""}
           />
-          {errors.title && <p className="error-text">{errors.title.message}</p>}
         </Field>
 
         <Field label="Description" error={errors.body}>
@@ -46,7 +46,6 @@ const ComplaintForm = ({ onSubmitSuccess, isSubmitting, submitError }) => {
             className={errors.body ? "input-error" : ""}
             rows={5}
           />
-          {errors.body && <p className="error-text">{errors.body.message}</p>}
         </Field>
 
         <button

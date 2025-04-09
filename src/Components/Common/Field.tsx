@@ -1,3 +1,4 @@
+// Components/Common/Field.js
 import React from "react";
 
 export default function Field({ label, children, htmlFor, error }) {
@@ -6,7 +7,7 @@ export default function Field({ label, children, htmlFor, error }) {
   return (
     <div className="form-control">
       {label && (
-        <label htmlFor={id} className="block  mb-2">
+        <label htmlFor={id} className="block mb-2">
           {label}
         </label>
       )}
