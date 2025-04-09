@@ -1,16 +1,21 @@
-// Components/ComplaintForm.js
+import React from "react";
 import { useForm } from "react-hook-form";
+import { ComplaintFormProps, FormData } from "../types";
 import Field from "./Common/Field";
 
-const ComplaintForm = ({ onSubmitSuccess, isSubmitting, submitError }) => {
+const ComplaintForm: React.FC<ComplaintFormProps> = ({
+  onSubmitSuccess,
+  isSubmitting,
+  submitError,
+}) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     const success = await onSubmitSuccess(data);
     if (success) {
       reset(); // Reset form after successful submission

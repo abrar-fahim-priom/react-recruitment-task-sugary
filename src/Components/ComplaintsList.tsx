@@ -1,5 +1,11 @@
-// Components/ComplaintsList.js
-const ComplaintsList = ({ complaints, isLoading, fetchError }) => {
+import React from "react";
+import { ComplaintsListProps } from "../types";
+
+const ComplaintsList: React.FC<ComplaintsListProps> = ({
+  complaints,
+  isLoading,
+  fetchError,
+}) => {
   // Show error message if fetch failed
   if (fetchError) {
     return (

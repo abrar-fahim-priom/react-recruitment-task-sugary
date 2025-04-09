@@ -1,28 +1,35 @@
-// App.js
 import { useEffect, useState } from "react";
 import { fetchComplaints, saveComplaint } from "./Api/api";
 import "./App.css";
 import Tooltip from "./Components/Common/Tooltip";
 import ComplaintForm from "./Components/ComplaintForm";
 import ComplaintsList from "./Components/ComplaintsList";
+import { Complaint, FormData } from "./types";
 
 function App() {
-  const [complaints, setComplaints] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   // Separate error states for different operations
-  const [fetchError, setFetchError] = useState("");
-  const [submitError, setSubmitError] = useState("");
+  const [fetchError, setFetchError] = useState<string>("");
+  const [submitError, setSubmitError] = useState<string>("");
 
   // Tooltip state
-  const [tooltip, setTooltip] = useState({
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
     visible: false,
     message: "",
-    type: "success", // success or error
+    type: "success",
   });
 
   // Show tooltip function
-  const showTooltip = (message, type = "success") => {
+  const showTooltip = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     // First reset any existing tooltip to ensure animation plays again
     setTooltip({ visible: false, message: "", type: "success" });
 
@@ -38,7 +45,7 @@ function App() {
   };
 
   // Handle complaint submission with smooth UI updates
-  const handleSaveComplaint = async (formData) => {
+  const handleSaveComplaint = async (formData: FormData): Promise<boolean> => {
     setIsSubmitting(true);
     setSubmitError(""); // Only clear submit errors
     try {

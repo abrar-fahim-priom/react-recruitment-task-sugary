@@ -1,7 +1,7 @@
-// Components/Common/Field.js
 import React from "react";
+import { FieldProps } from "../../types";
 
-export default function Field({ label, children, htmlFor, error }) {
+const Field: React.FC<FieldProps> = ({ label, children, htmlFor, error }) => {
   const id = htmlFor || getChildId(children);
 
   return (
@@ -15,12 +15,14 @@ export default function Field({ label, children, htmlFor, error }) {
       {error && <p className="error-text">{error.message}</p>}
     </div>
   );
-}
+};
 
 // Ensure we safely get the child's ID
-const getChildId = (children) => {
+const getChildId = (children: React.ReactNode): string => {
   if (React.isValidElement(children)) {
     return children.props?.id || "";
   }
   return "";
 };
+
+export default Field;

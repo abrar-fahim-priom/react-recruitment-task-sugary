@@ -1,5 +1,12 @@
-// Components/Common/Tooltip.js
-const Tooltip = ({ visible, message, type, onClose }) => {
+import React from "react";
+import { TooltipProps } from "../../types";
+
+const Tooltip: React.FC<TooltipProps> = ({
+  visible,
+  message,
+  type,
+  onClose,
+}) => {
   if (!visible) return null;
 
   return (
