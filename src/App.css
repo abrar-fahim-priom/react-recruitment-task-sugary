@@ -93,6 +93,7 @@ body {
   box-sizing: border-box;
 }
 
+/* Update the app-content styles */
 .app-content {
   width: 100%;
   max-width: 1200px;
@@ -101,62 +102,35 @@ body {
   gap: 2.5rem;
 }
 
-/* Header Styling */
-.app-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  width: 100%;
-}
-
-.app-header h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--gray-900);
-  margin-bottom: 0.75rem;
-  background: linear-gradient(to right, var(--primary-dark), var(--primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-}
-
-.app-header p {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* Section Styling */
-section {
-  margin-bottom: 2rem;
-  width: 100%;
-}
-
-section h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--gray-800);
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--gray-200);
-  position: relative;
-}
-
-section h2::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 60px;
-  height: 2px;
-  background-color: var(--primary);
-}
-
-/* Form Section */
+/* Update form-section and field styles */
 .form-section {
   position: relative;
   width: 100%;
+}
+
+.field {
+  position: fixed;
+  width: 40%;
+}
+
+/* Add/update media queries */
+@media (max-width: 768px) {
+  .app-content {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section {
+    position: static;
+  }
+
+  .field {
+    position: static;
+    width: 100%;
+  }
+
+  .complaint-form {
+    margin-bottom: 2rem;
+  }
 }
 
 .complaint-form {
@@ -444,6 +418,7 @@ textarea:focus {
 
   .app-header {
     grid-column: 1 / -1;
+ 
   }
 
   .form-section {

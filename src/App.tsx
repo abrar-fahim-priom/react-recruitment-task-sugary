@@ -108,21 +108,25 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="app-content">
-        <header className="app-header">
+      <header className="app-header">
           <h1>Customer Feedback Portal</h1>
           <p>
             We value your feedback and are committed to addressing your concerns
           </p>
         </header>
+
+      <div className="app-content">
         <section className="form-section">
+          <div className="field">
           <h2>Submit a Complaint</h2>
           <ComplaintForm
             onSubmitSuccess={handleSaveComplaint}
             isSubmitting={isSubmitting}
             submitError={submitError}
           />
+          </div>
         </section>
+
         <section className="list-section">
           <h2>Recent Complaints</h2>
           <ComplaintsList
